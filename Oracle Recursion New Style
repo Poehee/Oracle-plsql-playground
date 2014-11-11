@@ -1,0 +1,39 @@
+drop table people
+/
+
+create table people
+( id         number(3) not null
+, name       varchar2(30) not null
+, services   number(3)
+)
+/
+
+insert into people values ( 1,  'Hommus', null );
+insert into people values ( 2,  'Vice Hommus', 1 );
+insert into people values ( 3,  'Manager food', 2 );
+insert into people values ( 4,  'Manager armory', 2 );
+insert into people values ( 5,  'Hunter', 3 );
+insert into people values ( 6,  'Fisherman', 3 );
+insert into people values ( 7,  'Archer', 3 );
+insert into people values ( 8,  'Food catcher', 5 );
+insert into people values ( 9,  'Boatsman', 6 );
+insert into people values ( 10, 'Arrow craftsman', 4 );
+insert into people values ( 11, 'Bow craftsman', 4 );
+insert into people values ( 12, 'Fish', 6 );
+commit;
+
+with qrec ( id, name, hierlevel, path )
+as ( select p.id, p.name, 1, p.name
+     from   people p
+     where  p.services is null
+     union all
+     select c.id, c.name, hierlevel+1, qrec.path||'/'||c.name
+     from   people c
+            inner join qrec
+              on c.services = qrec.id
+   )           
+select *
+from   qrec
+;
+
+    
